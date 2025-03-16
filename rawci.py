@@ -1,4 +1,3 @@
-# HN MAEN CODE EDIT KAR PA RHAHA HUM
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox, simpledialog
