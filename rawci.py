@@ -88,11 +88,6 @@ def delete_attendance():
         df.to_csv(CSV_FILE, index=False)
         messagebox.showinfo("Success", f"All records of Roll Number {student_id} have been deleted.")
 
-    # student_id = roll_entry.get()
-    # df = pd.read_csv(CSV_FILE)
-    # df = df[df["Student_ID"] != student_id]
-    # df.to_csv(CSV_FILE, index=False)
-
 
 # Creating the main application window
 window = tk.Tk()
