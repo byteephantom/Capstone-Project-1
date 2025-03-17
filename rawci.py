@@ -184,3 +184,18 @@ window.mainloop()
 
 # Add Icons to Buttons
     # Use PhotoImage or Pillow to add small icons.
+
+#✨ Functional Enhancements
+# Add a Search Bar
+
+# Let users search for attendance records.
+# Filter by Date or Semester
+
+# Provide dropdown filters.
+# Export Data as Excel (XLSX) or PDF
+
+# Use pandas for XLSX export.
+# Use reportlab or fpdf for PDF generation.
+# Keyboard Shortcuts
+
+# Example: Press Enter to submit attendance.
