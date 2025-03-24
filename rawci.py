@@ -4,7 +4,7 @@ from tkinter import messagebox, simpledialog
 import pandas as pd
 import os
 from datetime import datetime
-
+from tkinter import *
 # Define the path to the CSV file where attendance records will be stored
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_FILE = os.path.join(BASE_DIR, "attendance.csv")
@@ -93,7 +93,7 @@ def delete_attendance():
 window = tk.Tk()
 window.title("Attendance Logger")
 window.geometry("500x350")  # Window size
-window.configure(bg="light blue")
+window.configure(bg="white")
 
 frame = tk.Frame(window, bg="white")
 frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
@@ -141,7 +141,6 @@ view_button.grid(row=6, column=1, padx=5, pady=5, sticky="ew")
 delete_button = tk.Button(frame, text="Delete Attendance", command=delete_attendance)
 delete_button.grid(row=7, column=1, padx=5, pady=5, sticky="ew")
 
-
 # Table to diaplay attendance records
 tree_frame = tk.Frame(window)
 tree_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -159,6 +158,27 @@ style.theme_use("clam")
 
 style.configure("Treeview", rowheight = 25, font=("Arial",10))
 style.configure("Treeview.Heading", font=("Arial",12, "bold"))
+
+# Dark Mode
+def toggle_dark_mode():
+    if window.cget("bg") == "white":
+        window.configure(bg="#2E2E2E")
+        frame.configure(bg="#2E2E2E")
+        for widget in frame.winfo_children():
+            if isinstance(widget, tk.Label) or isinstance(widget, tk.Button) or isinstance(widget, tk.Radiobutton):
+                widget.configure(bg="#2E2E2E", fg="white")
+        dark_mode_button.configure(text="Light Mode", bg="#444", fg="white")
+    else:
+        window.configure(bg="white")
+        frame.configure(bg="white")
+        for widget in frame.winfo_children():
+            if isinstance(widget, tk.Label) or isinstance(widget, tk.Button) or isinstance(widget, tk.Radiobutton):
+                widget.configure(bg="white", fg="black")
+        dark_mode_button.configure(text="Dark Mode", bg="lightgray", fg="black")
+
+# Dark mode toggle button
+dark_mode_button = tk.Button(window, text="Dark Mode", command=toggle_dark_mode, bg="lightgray", fg="black")
+dark_mode_button.pack(pady=5)
 
 # Initialize csv and start the Tkinter main loop
 initialize_csv()
