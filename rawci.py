@@ -88,6 +88,27 @@ def delete_attendance():
         df = df[df["Student_ID"].astype(str) != student_id]  # Remove all records of the given roll number
         df.to_csv(CSV_FILE, index=False)
         messagebox.showinfo("Success", f"All records of Roll Number {student_id} have been deleted.")
+        
+#To export the data to a excel file
+def export_to_excel():
+    try:
+        # Read the CSV file
+        df = pd.read_csv(CSV_FILE)
+        
+        # Define the Excel file path
+        excel_file = os.path.join(BASE_DIR, "attendance.xlsx")
+        
+        # Export to Excel
+        df.to_excel(excel_file, index=False)
+        
+        # Show success message
+        messagebox.showinfo(
+            "Export Successful", 
+            f"Attendance data exported to:\n{excel_file}"
+        )
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to export: {str(e)}")
+
 
 
 # Creating the main application window
@@ -141,6 +162,10 @@ view_button.grid(row=6, column=1, padx=5, pady=5, sticky="ew")
 # Delete
 delete_button = tk.Button(frame, text="Delete Attendance", command=delete_attendance)
 delete_button.grid(row=7, column=1, padx=5, pady=5, sticky="ew")
+
+# Export to Excel Button
+export_button = tk.Button(frame, text="Export to Excel", command=export_to_excel)
+export_button.grid(row=8, column=1, padx=5, pady=5, sticky="ew")
 
 # Table to diaplay attendance records
 tree_frame = tk.Frame(window)
