@@ -5,6 +5,7 @@ import pandas as pd
 import os
 from datetime import datetime
 from tkinter import *
+from fpdf import FPDF
 
 # Define the path to the CSV file where attendance records will be stored
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -57,13 +58,25 @@ def view_attendance():
     for row in tree.get_children():
         tree.delete(row)
     df = pd.read_csv(CSV_FILE)
+
+    # Debugging: Print column names exactly as read
+    #print("Raw column names:", df.columns.tolist())
+
+    # Standardize column names (strip spaces, lowercase everything)
+    df.columns = df.columns.str.strip().str.lower()
+
+    #print("Processed column names:", df.columns.tolist())  # Debugging print
+
+    if "semester" not in df.columns:
+        messagebox.showerror("Error", "Semester column is missing in CSV!")
+        return
     # Converting Semester to integer, replacing NaN with 0 (or another placeholder if needed
-    df["Semester"] = pd.to_numeric(df["Semester"], errors="coerce").fillna(0).astype(int)
+    df["semester"] = pd.to_numeric(df["semester"], errors="coerce").fillna(0).astype(int)
 
     # Inserting row into the table
     for _, row in df.iterrows():
         tree.insert("", tk.END, values=(
-            row["Student_ID"], row["Name"], row["Semester"], row["Date"], row["Status"]
+            row["student_id"], row["name"], row["semester"], row["date"], row["status"]
         ))
 
 
@@ -88,27 +101,47 @@ def delete_attendance():
         df = df[df["Student_ID"].astype(str) != student_id]  # Remove all records of the given roll number
         df.to_csv(CSV_FILE, index=False)
         messagebox.showinfo("Success", f"All records of Roll Number {student_id} have been deleted.")
-        
-#To export the data to a excel file
-def export_to_excel():
-    try:
-        # Read the CSV file
-        df = pd.read_csv(CSV_FILE)
-        
-        # Define the Excel file path
-        excel_file = os.path.join(BASE_DIR, "attendance.xlsx")
-        
-        # Export to Excel
-        df.to_excel(excel_file, index=False)
-        
-        # Show success message
-        messagebox.showinfo(
-            "Export Successful", 
-            f"Attendance data exported to:\n{excel_file}"
-        )
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to export: {str(e)}")
 
+    # student_id = roll_entry.get()
+    # df = pd.read_csv(CSV_FILE)
+    # df = df[df["Student_ID"] != student_id]
+    # df.to_csv(CSV_FILE, index=False)
+
+# Export to Excel
+def export_to_excel():
+    df = pd.read_csv(CSV_FILE)
+    export_path = os.path.join(BASE_DIR, "attendance.xlsx")
+    df.to_excel(export_path, index=False)
+    messagebox.showinfo("Export Successful", f"Data exported to {export_path}")
+
+# Export to PDF
+def export_to_pdf():
+    try:
+        df = pd.read_csv(CSV_FILE)
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Helvetica", size=12)  # Fixed: Use core font
+
+        # Title (fixed parameters)
+        pdf.cell(200, 10, text="Attendance Records", new_x="LMARGIN", new_y="NEXT", align='C')
+        pdf.ln(10)
+
+        # Headers
+        for col in df.columns:
+            pdf.cell(40, 10, text=str(col), border=1)
+        pdf.ln()
+
+        # Data rows
+        for _, row in df.iterrows():
+            for col in df.columns:
+                pdf.cell(40, 10, text=str(row[col]), border=1)
+            pdf.ln()
+
+        pdf_path = os.path.join(BASE_DIR, "attendance.pdf")
+        pdf.output(pdf_path)
+        messagebox.showinfo("Export Successful", f"Data exported to {pdf_path}")
+    except Exception as e:
+        messagebox.showerror("PDF Export Error", f"Failed to export PDF: {str(e)}")
 
 
 # Creating the main application window
@@ -149,8 +182,6 @@ tk.Radiobutton(frame, text="Present", variable=status_var, value="Present").grid
 tk.Radiobutton(frame, text="Absent", variable=status_var, value="Absent").grid(row=4, column=2, sticky="w")
 
 
-# Buttons to submit , view and delete records
-
 #Submit
 submit_button = tk.Button(frame, text="Submit", command=get_entries)
 submit_button.grid(row=5, column=1, padx=5, pady=15, sticky="ew")
@@ -163,9 +194,17 @@ view_button.grid(row=6, column=1, padx=5, pady=5, sticky="ew")
 delete_button = tk.Button(frame, text="Delete Attendance", command=delete_attendance)
 delete_button.grid(row=7, column=1, padx=5, pady=5, sticky="ew")
 
-# Export to Excel Button
-export_button = tk.Button(frame, text="Export to Excel", command=export_to_excel)
-export_button.grid(row=8, column=1, padx=5, pady=5, sticky="ew")
+# Export Menu Button
+export_menu_button = tk.Menubutton(frame, text="Export Data", relief=tk.RAISED)
+export_menu_button.grid(row=8, column=1, padx=5, pady=5, sticky="ew")
+
+# Create the dropdown menu(with option pdf and excel)
+export_menu = tk.Menu(export_menu_button, tearoff=0)
+export_menu.add_command(label="As PDF", command=export_to_pdf)
+export_menu.add_command(label="As Excel Sheet", command=export_to_excel)
+
+# Attach the menu to the button
+export_menu_button.config(menu=export_menu)
 
 # Table to diaplay attendance records
 tree_frame = tk.Frame(window)
@@ -206,12 +245,13 @@ def toggle_dark_mode():
 dark_mode_button = tk.Button(window, text="Dark Mode", command=toggle_dark_mode, bg="lightgray", fg="black")
 dark_mode_button.pack(pady=5)
 
+
 # Initialize csv and start the Tkinter main loop
 initialize_csv()
 window.mainloop()
 
 
-# 🎨 UI/UX Enhancements (Yet To be done)
+# 🎨 UI/UX Enhancements (Yet to be Done)
 
 # Improve Button Styling
     # Use style.configure() to make buttons more attractive.
@@ -231,8 +271,8 @@ window.mainloop()
 # Add Icons to Buttons
     # Use PhotoImage or Pillow to add small icons.
 
-#✨ Functional Enhancements
-# Add a Search Bar
+# ✨ Functional Enhancements
+    # Add a Search Bar
 
 # Let users search for attendance records.
 # Filter by Date or Semester
