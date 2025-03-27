@@ -59,18 +59,11 @@ def view_attendance():
         tree.delete(row)
     df = pd.read_csv(CSV_FILE)
 
-    # Debugging: Print column names exactly as read
-    #print("Raw column names:", df.columns.tolist())
-
-    # Standardize column names (strip spaces, lowercase everything)
     df.columns = df.columns.str.strip().str.lower()
-
-    #print("Processed column names:", df.columns.tolist())  # Debugging print
 
     if "semester" not in df.columns:
         messagebox.showerror("Error", "Semester column is missing in CSV!")
         return
-    # Converting Semester to integer, replacing NaN with 0 (or another placeholder if needed
     df["semester"] = pd.to_numeric(df["semester"], errors="coerce").fillna(0).astype(int)
 
     # Inserting row into the table
@@ -101,11 +94,6 @@ def delete_attendance():
         df = df[df["Student_ID"].astype(str) != student_id]  # Remove all records of the given roll number
         df.to_csv(CSV_FILE, index=False)
         messagebox.showinfo("Success", f"All records of Roll Number {student_id} have been deleted.")
-
-    # student_id = roll_entry.get()
-    # df = pd.read_csv(CSV_FILE)
-    # df = df[df["Student_ID"] != student_id]
-    # df.to_csv(CSV_FILE, index=False)
 
 # Export to Excel
 def export_to_excel():
