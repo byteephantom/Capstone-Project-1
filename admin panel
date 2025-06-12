@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - UI 1</title>
+  <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+  <div class="container">
+    <div class="form-box">
+      <h2>Login</h2>
+      <form>
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+        <p>Don't have an account? <a href="signup1.html">Signup</a></p>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Signup - UI 1</title>
+  <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+  <div class="container">
+    <div class="form-box">
+      <h2>Signup</h2>
+      <form>
+        <input type="text" placeholder="Full Name" required>
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Password" required>
+        <button type="submit">Signup</button>
+        <p>Already have an account? <a href="login1.html">Login</a></p>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #74ebd5, #9face6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.2);
+  width: 350px;
+  text-align: center;
+}
+
+.form-box h2 {
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+input {
+  width: 90%;
+  padding: 10px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 20px;
+  background-color: #fff;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+a {
+  color: #fff;
+  text-decoration: underline;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - UI 2</title>
+  <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+  <div class="card">
+    <h2>Login</h2>
+    <form>
+      <label>Email</label>
+      <input type="email" placeholder="Enter your email" required>
+      <label>Password</label>
+      <input type="password" placeholder="Enter password" required>
+      <button type="submit">Login</button>
+      <p>New user? <a href="signup2.html">Create account</a></p>
+    </form>
+  </div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Signup - UI 2</title>
+  <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+  <div class="card">
+    <h2>Signup</h2>
+    <form>
+      <label>Name</label>
+      <input type="text" placeholder="Full Name" required>
+      <label>Email</label>
+      <input type="email" placeholder="Email address" required>
+      <label>Password</label>
+      <input type="password" placeholder="Create password" required>
+      <button type="submit">Signup</button>
+      <p>Already registered? <a href="login2.html">Login</a></p>
+    </form>
+  </div>
+</body>
+</html>
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f0f2f5;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.card {
+  background: #fff;
+  padding: 40px;
+  width: 350px;
+  border-radius: 10px;
+  box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+label {
+  display: block;
+  margin: 15px 0 5px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4a90e2;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+a {
+  color: #4a90e2;
+  text-decoration: none;
+  font-weight: bold;
+}
+<img src="logo.png" alt="Logo" class="logo">
+.logo {
+  width: 80px;
+  margin-bottom: 15px;
+}
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from werkzeug.security import generate_password_hash, check_password_hash
+
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+users = {}  # Temporary dictionary; replace with a DB in production
+
+@app.route('/')
+def home():
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        user = users.get(email)
+
+        if user and check_password_hash(user['password'], password):
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid email or password', 'error')
+    return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        password = generate_password_hash(request.form['password'])
+        if email in users:
+            flash('Email already exists', 'error')
+        else:
+            users[email] = {'name': name, 'password': password}
+            flash('Signup successful! Please login.', 'success')
+            return redirect(url_for('login'))
+    return render_template('signup.html')
+
+@app.route('/dashboard')
+def dashboard():
+    return "Welcome to your dashboard!"
+
+if __name__ == '__main__':
+    app.run(debug=True)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+</head>
+<body>
+  <div class="container">
+    <div class="form-box">
+      <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="Logo">
+      <h2>Login</h2>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      <form method="POST">
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+        <p>Don't have an account? <a href="{{ url_for('signup') }}">Signup</a></p>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
+.flash {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.flash.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.flash.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
